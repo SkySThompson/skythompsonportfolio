@@ -2,7 +2,7 @@ services:
   - type: web
     name: skythompsonportfolio
     env: python
+    rootDir: backend
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn backend.app:app
-    rootDir: .
+    startCommand: gunicorn app:app
     pythonVersion: 3.10
