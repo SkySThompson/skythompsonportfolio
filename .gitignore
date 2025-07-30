@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 *.dist-info/
 */REQUESTED
+__pycache__/
+*.pyc
+*.dist-info/
+*/REQUESTED
