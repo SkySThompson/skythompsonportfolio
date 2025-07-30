@@ -2,8 +2,6 @@ services:
   - type: web
     name: skythompsonportfolio
     env: python
-    plan: free
-    region: ohio
-    branch: main
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn backend.app:app
+    pythonVersion: 3.10
