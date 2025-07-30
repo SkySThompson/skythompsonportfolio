@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sky Thompson Portfolio</title>
+  <style>
+    /* Base styling */
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #boot-screen {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      padding: 48px;
+    }
+    .header, .footer {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    .section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .loading-dots::after {
+      display: inline-block;
+      animation: dotty steps(1,end) 1s infinite;
+      content: '';
+    }
+    @keyframes dotty {
+      0% { content: '   '; }
+      25% { content: '.  '; }
+      50% { content: '.. '; }
+      75% { content: '...'; }
+      100%{ content: '   '; }
+    }
+    .blinking-cursor {
+      width: 0.8em;
+      height: 0.15em;
+      background-color: #fff;
+      animation: blink 0.65s step-end infinite;
+    }
+    @keyframes blink {
+      from, to { background-color: transparent; }
+      50% { background-color: #fff; }
+    }
+    /* Start overlay */
+    #start-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0,0,0,0.95);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    .start-box {
+      border: 6px solid #fff;
+      padding: 24px;
+      max-width: 500px;
+      background-color: #000;
+    }
+    .start-button {
+      margin-top: 16px;
+      border: 4px solid #fff;
+      display: inline-block;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .start-button:hover {
+      background-color: #fff;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+<div id="boot-screen">
+  <div class="header">
+    <div>
+      <p><strong>Sky Thompson,</strong></p>
+      <p><strong>Code is Life</strong></p>
+    </div>
+    <div style="margin-left:64px;">
+      <p>Released: 01/13/2000</p>
+      <p>BIOS (C)2000 Your Inc.,</p>
+    </div>
+  </div>
+  <div class="section" id="boot-body">
+    <!-- Dynamic messages will appear here -->
+    <p id="system-line">Initializing BIOS…</p>
+    <div id="message-container"></div>
+    <div id="resource-list" style="padding-left:32px; padding-bottom:32px;"></div>
+    <span class="blinking-cursor"></span>
+  </div>
+  <div class="footer">
+    <p>Press <b>DEL</b> to enter SETUP , <b>ESC</b> to skip memory test</p>
+    <p id="date-line"></p>
+  </div>
+</div>
+<div id="start-overlay">
+  <div class="start-box">
+    <p>Sky Thompson's Portfolio 2025</p>
+    <div style="display:flex; align-items:flex-end;">
+      <p>Click start to begin&nbsp;</p>
+      <span class="blinking-cursor"></span>
+    </div>
+    <div style="text-align:center;">
+      <div class="start-button" onclick="finishIntro()">START</div>
+    </div>
+  </div>
+</div>
+<script>
+  // Utility to wait
+  function wait(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
+
+  // Format date as MM/DD/YYYY
+  function formatDate(date){
+    const m = String(date.getMonth()+1).padStart(2,'0');
+    const d = String(date.getDate()).padStart(2,'0');
+    const y = date.getFullYear();
+    return `${m}/${d}/${y}`;
+  }
+  document.getElementById('date-line').textContent = formatDate(new Date());
+
+  const systemLine = document.getElementById('system-line');
+  const messageContainer = document.getElementById('message-container');
+  const resourceList = document.getElementById('resource-list');
+  const startOverlay = document.getElementById('start-overlay');
+
+  // Messages to display sequentially
+  const biosLines = [
+    'HSP S13 2000-2025 Special UC131S',
+    'HSP Showcase(tm) XX 113',
+    'Checking RAM : 14000 OK',
+    '',
+  ];
+
+  // Example resources to simulate loading
+  const resources = [
+    {name: 'mouseUp', size: 10},
+    {name: 'keyboardKeydown1', size: 10},
+    {name: 'keyboardKeydown6', size: 10},
+    {name: 'keyboardKeydown3', size: 10},
+    {name: 'keyboardKeydown4', size: 10},
+    {name: 'keyboardKeydown2', size: 10},
+    {name: 'ccType', size: 10},
+    {name: 'keyboardKeydown5', size: 10},
+  ];
+
+  async function showBootSequence(){
+    // Show BIOS lines
+    for(const line of biosLines){
+      if(line){
+        const p = document.createElement('p');
+        p.textContent = line;
+        messageContainer.appendChild(p);
+      }
+      await wait(800);
+    }
+
+    // Show loading header
+    const loadingHeader = document.createElement('p');
+    loadingHeader.classList.add('loading-dots');
+    loadingHeader.textContent = `LOADING RESOURCES (0/${resources.length})`;
+    messageContainer.appendChild(loadingHeader);
+
+    // Load resources sequentially
+    for(let i=0;i<resources.length;i++){
+      const item = resources[i];
+      await wait(500);
+      const prog = Math.round(((i+1)/resources.length)*100);
+      const entry = document.createElement('p');
+      // Format spacing to align percentages
+      const spaces = ' '.repeat(Math.max(0, 24 - item.name.length));
+      entry.textContent = `Loaded ${item.name}${spaces}... ${prog}%`;
+      resourceList.appendChild(entry);
+      // Update header
+      loadingHeader.textContent = `LOADING RESOURCES (${i+1}/${resources.length})`;
+      if(i === resources.length-1){
+        loadingHeader.textContent = 'FINISHED LOADING RESOURCES';
+      }
+    }
+
+    await wait(1000);
+    // Show message that all content loaded
+    const done = document.createElement('p');
+    done.innerHTML = `All Content Loaded, launching <b>'Sky Thompson's Portfolio '</b> V1.0`;
+    messageContainer.appendChild(done);
+    await wait(1200);
+    // Fade out boot screen and show start overlay
+    startOverlay.style.pointerEvents = 'auto';
+    startOverlay.style.opacity = 1;
+  }
+
+  function finishIntro(){
+    // Hide start overlay and maybe redirect to your main page
+    startOverlay.style.opacity = 0;
+    startOverlay.style.pointerEvents = 'none';
+    // Insert your callback here (e.g. window.location.href = '/home')
+  }
+
+  // Start boot sequence on load
+  window.addEventListener('load', showBootSequence);
+</script>
+</body>
+</html>
